@@ -1,0 +1,39 @@
+---
+title: "Week 2 Assignment"
+date: "January 27, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(leaflet)
+library(dplyr)
+```
+
+In the map we plot the locations of the nuclear power plants in the United States. This information comes from the U.S. Energy Information Administration.
+
+```{r,message=FALSE,warning=FALSE}
+# Get data
+x = "https://www.eia.gov/maps/map_data/PowerPlants_US_EIA.zip"
+download.file(x,"PowerPlants_US.zip")
+unzip("PowerPlants_US.zip","PowerPlants_US_201810.dbf")
+power_plants <- foreign::read.dbf("PowerPlants_US_201810.dbf")
+
+# Select Nuclear plants
+nuclear_power_plants <- power_plants %>%
+  filter(PrimSource=="nuclear")
+  
+```
+## Nuclear power plants in the United States
+```{r, echo=FALSE}
+
+m <- leaflet() %>% 
+  addTiles() %>%
+  addMarkers(data = nuclear_power_plants, 
+             lat = ~Latitude,
+             lng = ~ Longitude, 
+             label  =  ~Plant_Name)
+m
+
+```
+
